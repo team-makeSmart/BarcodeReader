@@ -49,8 +49,8 @@ class BarcodeImage
             rowLength = MAX_WIDTH; // Set to MAX_WIDTH
          }
 
-         // argumentIndex = str_data[row].length;
-         for (int col = 0; col < rowLength; col++)
+         //
+         for (int col = (rowLength - 1); col >= 0; col--)
          {
             if (str_data[row].charAt(col) == '*')
             {
