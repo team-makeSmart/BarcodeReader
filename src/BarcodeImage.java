@@ -49,8 +49,8 @@ class BarcodeImage
             rowLength = MAX_WIDTH; // Set to MAX_WIDTH
          }
 
-         // argumentIndex = str_data[row].length;
-         for (int col = 0; col < rowLength; col++)
+         //
+         for (int col = (rowLength - 1); col > 0; col--)
          {
             if (str_data[row].charAt(col) == '*')
             {
@@ -119,6 +119,23 @@ class BarcodeImage
 
       // Return true because pixel was successfully changed
       return true;
+   }
+
+   /**
+    * Clone Method. Allows for BarcodeImage object to be cloned
+    * 
+    * @return clone of BarcodeImage object or returns null if exception
+    */
+   @Override
+   public BarcodeImage clone()
+   {
+      try
+      {
+         return (BarcodeImage) super.clone();
+      } catch (CloneNotSupportedException exception)
+      {
+         return null; // Returns null if cannot clone object
+      }
    }
 
 }
