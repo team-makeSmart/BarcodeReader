@@ -74,6 +74,18 @@ class BarcodeImage
     */
    public boolean getPixel(int row, int col)
    {
+      // Check if row argument values are within valid range
+      if (row < 0 || row > MAX_HEIGHT - 1)
+      {
+         return false; // Error out of range
+      }
+
+      // Check if col argument values are within valid range
+      if (col < 0 || col > MAX_WIDTH - 1)
+      {
+         return false; // Error out of range
+      }
+
       return image_data[row][col];
    }
 
