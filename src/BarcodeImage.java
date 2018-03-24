@@ -121,4 +121,70 @@ class BarcodeImage
       return true;
    }
 
+
+//// BELOW FOR TESTING PURPOSES ONLY //////////////////////
+   
+   
+   /**
+    * Testing method to help in the development of the class
+    * Creates an object of BarcodeImage class that
+    * is initialized with string values representing
+    * an image 1d string array
+    * */
+   public static void testImage()
+   {
+      // Create an array string
+      String[] strArray =
+      { "* * * * * * * * * * * * * * * * * *",
+         "*                                 *",
+         "***** ** * **** ****** ** **** **  ",
+         "* **************      *************",
+         "**  *  *        *  *   *        *  ",
+         "* **  *     **    * *   * ****   **",
+         "**         ****   * ** ** ***   ** ",
+         "*   *  *   ***  *       *  ***   **",
+         "*  ** ** * ***  ***  *  *  *** *   ",
+         "***********************************" };
+
+      // Create an object of BarcodeImage type using string array
+      BarcodeImage object = new BarcodeImage(strArray);
+      
+      object.displayToConsole();
+   }
+   
+   /**
+    * Testing Method to help in the development of class
+    * Prints calling objects image to screen
+    * Converts true values to '*' * ' ' to false
+    * */
+   public void displayToConsole() 
+   {
+      // go next line on console
+      System.out.println();
+
+      // Loop through 
+      for (int row = 0; row < MAX_HEIGHT; row++)
+      {
+         for (int col = 0; col < MAX_WIDTH; col++)
+         {
+            if (image_data[row][col] == true)
+            {
+               System.out.print("*");
+            } 
+            else
+            {
+            System.out.print(" ");
+            }
+         }
+         // go next line on console
+         System.out.println();
+      }
+   }
+   
 }
+   
+   
+   
+   
+   
+   
