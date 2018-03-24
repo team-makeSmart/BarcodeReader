@@ -49,14 +49,16 @@ class BarcodeImage
             rowLength = MAX_WIDTH; // Set to MAX_WIDTH
          }
 
-         // argumentIndex = str_data[row].length;
-         for (int col = 0; col < rowLength; col++)
+         // Nested for loop iterats through and finds true or false 
+         // values based on '*' for true, or ' ' for false and 
+         // stores in image_data boolean array
+         for (int col = (rowLength - 1); col >= 0; col--)
          {
             if (str_data[row].charAt(col) == '*')
             {
                image_data[row][col] = true;
             }
-            // else the default value is is false for ' '
+            // else the default value is false for ' '
          }
       }
    }
@@ -74,7 +76,7 @@ class BarcodeImage
     */
    public boolean getPixel(int row, int col)
    {
-      // Check if row argument values are within valid range
+ For      // Check if row argument values are within valid range
       if (row < 0 || row > MAX_HEIGHT - 1)
       {
          return false; // Error out of range
@@ -119,6 +121,23 @@ class BarcodeImage
 
       // Return true because pixel was successfully changed
       return true;
+   }
+
+   /**
+    * Clone Method. Allows for BarcodeImage object to be cloned
+    * 
+    * @return clone of BarcodeImage object or returns null if exception
+    */
+   @Override
+   public BarcodeImage clone()
+   {
+      try
+      {
+         return (BarcodeImage) super.clone();
+      } catch (CloneNotSupportedException exception)
+      {
+         return null; // Returns null if cannot clone object
+      }
    }
 
 }
