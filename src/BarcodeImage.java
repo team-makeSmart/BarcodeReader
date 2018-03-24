@@ -1,4 +1,4 @@
-class BarcodeImage
+class BarcodeImage implements Cloneable
 {
    // Internal max dimensions of a two-dimensional array
    public static final int MAX_HEIGHT = 30;
@@ -120,6 +120,16 @@ class BarcodeImage
       // Return true because pixel was successfully changed
       return true;
    }
+   
+   /**
+    * 
+    * Creates and returns a copy of this object
+    * @throws CloneNotSupportedException 
+    */
+   public Object clone() throws CloneNotSupportedException
+   {
+	   return (BarcodeImage) super.clone();
+   }
 
 
 //// BELOW FOR TESTING PURPOSES ONLY //////////////////////
@@ -182,9 +192,3 @@ class BarcodeImage
    }
    
 }
-   
-   
-   
-   
-   
-   
