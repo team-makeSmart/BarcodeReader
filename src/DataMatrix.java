@@ -90,26 +90,23 @@ class DataMatrix implements BarcodeIO
     */
    private void cleanImage() 
    {
-	   while (leftColumnEmpty()) {
-		   shiftImageLeft();
-	   }
+	   // Make the image left justified
+	   while (leftColumnEmpty()) shiftImageLeft(); 
 	   
-	   while (bottomRowEmpty()) {
-		   shiftImageDown();
-	   }
+	   // Make the image bottom justified
+	   while (bottomRowEmpty()) shiftImageDown();
    }
    
    /**
-    * Helper method fo cleanImage()
+    * Helper method for cleanImage()
     * Shifts the image to the left by one column
     */
    private void shiftImageLeft() 
    {
-	   // Scan the image - left to right, top to bottom
-	   for (int i = 0; i < BarcodeImage.MAX_HEIGHT; i++) 
+	   // Scan the image - top to bottom, left to right
+	   for (int i = 0; i < BarcodeImage.MAX_HEIGHT; i++) // Scan each column 
 	   {
-		   // Scan each column 
-		  for (int j = 1; j < BarcodeImage.MAX_WIDTH; j++) 
+		  for (int j = 1; j < BarcodeImage.MAX_WIDTH; j++) // Scan each row
 		  { 
 			  // Scan each row
 			  image.setPixel(i, j-1, image.getPixel(i, j)); // Shift each column to the left
@@ -119,19 +116,19 @@ class DataMatrix implements BarcodeIO
    }
    
    /**
-    * Helper method fo cleanImage()
+    * Helper method for cleanImage()
     * Shift the image down by one row
     */
    private void shiftImageDown() 
    {
-	   // Scan the image - left to right, top to bottom
-	   for (int i = 1; i < BarcodeImage.MAX_HEIGHT; i++) 
+	   // Scan the image - bottom to top, left to right
+	   for (int i = BarcodeImage.MAX_HEIGHT; i > 0; i--) // Scan each column
 	   {
 		   for (int j = 0; j < BarcodeImage.MAX_WIDTH; j++) // Scan each row
-			{ 
-				image.setPixel(i, j, image.getPixel(i-1, j)); // Shift each row down
+			{
+			   image.setPixel(i, j, image.getPixel(i-1, j)); // Shift each row down
 			}
-	   }	
+	   }
    }
    
    
@@ -156,7 +153,7 @@ class DataMatrix implements BarcodeIO
 	  boolean isEmpty = true;
 	  for (int j = 0; j < BarcodeImage.MAX_WIDTH; j++) 
 	  {
-		  if (image.getPixel(BarcodeImage.MAX_HEIGHT, j)) isEmpty = false;
+		  if (image.getPixel(BarcodeImage.MAX_HEIGHT-1, j)) isEmpty = false;
 	  }
 	  return isEmpty;
    }
@@ -179,7 +176,7 @@ class DataMatrix implements BarcodeIO
 	   {
 		   //Object clone method should be implemented in the BarcodeImage class
 		   this.image = (BarcodeImage) bc.clone();
-		   //cleanImage();
+		   cleanImage();
 		   this.actualHeight = computeSignalHeight();
 		   this.actualWidth = computeSignalWidth();
 		   return true;
@@ -225,7 +222,13 @@ class DataMatrix implements BarcodeIO
    
    public void displayImageToConsole()
    {
+	  
+	   // THIS STILL NEEDS TO BE WRITTEN ACCORDING TO THE SPEC,
+	   // I wrote this for testing purposes only
+	  
+	  System.out.println("-----------------------");
       image.displayToConsole();
+      System.out.println("-----------------------");
    }
 
    // ---- End of BarcodeIO interface methods ----
@@ -278,6 +281,8 @@ class DataMatrix implements BarcodeIO
      
       BarcodeImage bc = new BarcodeImage(sImageIn);
       DataMatrix dm = new DataMatrix(bc);
+      
+      dm.displayImageToConsole();
       
       System.out.println("actualHeight "+ dm.actualHeight);
       System.out.println("actualWidth "+ dm.actualWidth);
