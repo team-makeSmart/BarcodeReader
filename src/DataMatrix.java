@@ -65,7 +65,7 @@ class DataMatrix implements BarcodeIO
 	  // signalWidth = 0;
 	   // Scans the last row of the 2D array, incrementing the signalHeight if a '*' is found
 	   for (int i = 0; i < BarcodeImage.MAX_WIDTH; i++) {
-		   if (image.getPixel(i,0))
+		   if (image.getPixel(0,i))
 			   actualWidth++;//signalWidth++;
 	   }
 	   return actualWidth;//  return signalWidth;
@@ -81,7 +81,7 @@ class DataMatrix implements BarcodeIO
 	  // signalHeight = 0;
 	   // Scans each element in the first column the 2D array, incrementing the signalHeight if a '*' is found
 	   for (int i = 0; i < BarcodeImage.MAX_HEIGHT; i++) {
-		   if (image.getPixel(0,i))
+		   if (image.getPixel(i,0))
 			   actualHeight++;// signalHeight++;
 	   
 	   }
