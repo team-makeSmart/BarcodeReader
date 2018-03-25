@@ -36,28 +36,37 @@ class BarcodeImage implements Cloneable
     */
    BarcodeImage(String[] str_data)
    {
-      // Initialize 2D array to have the values of the string argument
-      // Starts initializing at cartesian coordianate point (0,0)
-      for (int row = 0; row < str_data.length; row++)
+      // Index for string argument
+      int strIndex = str_data.length - 1;
+
+      // On iterations of for-loop,width holds length of string arg at strIndex
+      // Width will allow the for loop to only access the values of the
+      // str_data[] within bounds of each elements length and thus
+      // ragged arrays are accounted for
+      int width = 0;
+
+      // Height is similar to
+      int height = (MAX_HEIGHT - str_data.length);
+
+      // Initialize image_date to have the values of the string argument
+      // Starts initializing at Cartesian coordinate point (0,0)
+      // Note: The outer for-loop is decremented to place image in bottom-left
+      for (int row = MAX_HEIGHT - 1; row >= height; row--)
       {
-         // Get and store the length of the row at indexed value
-         int rowLength = str_data[row].length();
+         // Set the width to length of str_data element at the index value
+         width = str_data[strIndex].length();
 
-         // Check if rowLength is too long for BarcodeImage object
-         if (rowLength > MAX_WIDTH)
+         //Iterates through the columns of the row
+         for (int col = 0; col < width; col++)
          {
-            rowLength = MAX_WIDTH; // Set to MAX_WIDTH
-         }
-
-         //
-         for (int col = (rowLength - 1); col >= 0; col--)
-         {
-            if (str_data[row].charAt(col) == '*')
+            // Finds if the char value at str_data index represents true, '*' 
+            if (str_data[strIndex].charAt(col) == '*')
             {
                image_data[row][col] = true;
             }
-            // else the default value is is false for ' '
+            // else the default value is false for ' '
          }
+         strIndex--; // Decrement the index before next loop iteration
       }
    }
 
