@@ -171,6 +171,7 @@ class DataMatrix implements BarcodeIO
     * @param bc the BarcodeImage object 
     * @return true if no CloneNotSupportedException occurs
     */
+   @Override
    public boolean scan(BarcodeImage bc)
    {
 	   try
@@ -252,14 +253,13 @@ class DataMatrix implements BarcodeIO
       return true;
    }
    
-	public void printDecodedImage(String imageToBinary)
+   public void printDecodedImage(String imageToBinary)
 	{
 		System.out.println();
 		System.out.println(imageToBinary);
 	}
-
-	/**
-	 * Loops through the decoded image and transposes
+   
+  /* Loops through the decoded image and transposes
 	 * rows with columns. Each column will be converted to row that will
 	 * hold a binary number to be converted to a decimal number
 	 * and finally to asccii code
@@ -293,26 +293,50 @@ class DataMatrix implements BarcodeIO
 
 	}
 
-	/**
-	 * Displays the decoded Text to Console
-	 */
+   
+   /**
+    * Displays the text to the console
+    */
    public void displayTextToConsole()
    {
-	   
-		System.out.print(text+"\n");
-		System.out.println("\t-----------------");
+	   System.out.println(text+"\n");
    }
    
+   /**
+    * Displays the BarcodeImage to the console 
+    * with a border and with the extra whitespace trimmed 
+    */
    public void displayImageToConsole()
    {
-	  
-	   // THIS STILL NEEDS TO BE WRITTEN ACCORDING TO THE SPEC,
-	   // I wrote this for testing purposes only
-	  
-	  System.out.println("-----------------------");
-      image.displayToConsole();
-      System.out.println("-----------------------");
-   }
+	   
+	   // Print top border
+	   System.out.print(" ");
+	   for (int i = 0; i < actualWidth; i ++) {
+		   System.out.print("-");
+	   }
+	   
+	   // Go to new line
+	   System.out.println();;
+	   
+	   for (int row = BarcodeImage.MAX_HEIGHT - actualHeight; row < BarcodeImage.MAX_HEIGHT; row++) // Scan through each row
+	   {
+		   // Print border
+		   System.out.print("|");
+		   for (int col = 0; col < actualWidth; col++) // Scan through each column
+	       {
+			   
+			   // Print a '*' if index value is true
+			   if (image.getPixel(row, col) == true) {
+	            	System.out.print("*");
+	            }
+	            else {
+	            	System.out.print(" ");
+	            }
+	         }
+	         // Print border and go to next line on console
+		     System.out.print("|\n");
+	      }
+	}
 
    // ---- End of BarcodeIO interface methods ----
    
@@ -361,24 +385,26 @@ class DataMatrix implements BarcodeIO
             "                                          "
 
       };
-      
+     
       BarcodeImage bc = new BarcodeImage(sImageIn);
       DataMatrix dm = new DataMatrix(bc);
+      
+      dm.displayImageToConsole();
+      
+      System.out.println("actualHeight "+ dm.actualHeight);
+      System.out.println("actualWidth "+ dm.actualWidth);
+      
+      
+      //translate two images to text
       dm.translateImageToText();
       dm.displayTextToConsole();
       
-   
-     
       bc = new BarcodeImage(sImageIn_2);
       dm = new DataMatrix(bc);
       dm.translateImageToText();
       dm.displayTextToConsole();
+      
      
-      
-   
-      
-//      System.out.println("actualHeight "+ dm.actualHeight);
-//      System.out.println("actualWidth "+ dm.actualWidth);
 //     
 //      // First secret message
 //      dm.translateImageToText();
