@@ -215,21 +215,49 @@ class DataMatrix implements BarcodeIO
       return true;
    }
    
+   /**
+    * Displays the text to the console
+    */
    public void displayTextToConsole()
    {
-     
+	   System.out.println(text);
    }
    
+   /**
+    * Displays the BarcodeImage to the console 
+    * with a border and with the extra whitespace trimmed 
+    */
    public void displayImageToConsole()
    {
-	  
-	   // THIS STILL NEEDS TO BE WRITTEN ACCORDING TO THE SPEC,
-	   // I wrote this for testing purposes only
-	  
-	  System.out.println("-----------------------");
-      image.displayToConsole();
-      System.out.println("-----------------------");
-   }
+	   
+	   // Print top border
+	   System.out.print(" ");
+	   for (int i = 0; i < actualWidth; i ++) {
+		   System.out.print("-");
+	   }
+	   
+	   // Go to new line
+	   System.out.println();;
+	   
+	   for (int row = BarcodeImage.MAX_HEIGHT - actualHeight; row < BarcodeImage.MAX_HEIGHT; row++) // Scan through each row
+	   {
+		   // Print border
+		   System.out.print("|");
+		   for (int col = 0; col < actualWidth; col++) // Scan through each column
+	       {
+			   
+			   // Print a '*' if index value is true
+			   if (image.getPixel(row, col) == true) {
+	            	System.out.print("*");
+	            }
+	            else {
+	            	System.out.print(" ");
+	            }
+	         }
+	         // Print border and go to next line on console
+		     System.out.print("|\n");
+	      }
+	}
 
    // ---- End of BarcodeIO interface methods ----
    
