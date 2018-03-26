@@ -13,7 +13,7 @@ class DataMatrix implements BarcodeIO
     */
    DataMatrix()
    {
-	  this.image = new BarcodeImage();//this.BarcodeImage = new BarcodeImage();
+      this.image = new BarcodeImage();
       this.text = "";
       this.actualWidth = 0;
       this.actualHeight = 0;
@@ -25,6 +25,7 @@ class DataMatrix implements BarcodeIO
     */
    DataMatrix(BarcodeImage image)
    {
+	   this();
 	   scan(image);
    }
    
@@ -34,6 +35,7 @@ class DataMatrix implements BarcodeIO
     */
    DataMatrix(String text)
    {
+	   this();
 	   readText(text);
    }
    
@@ -62,13 +64,12 @@ class DataMatrix implements BarcodeIO
     */
    private int computeSignalWidth()
    {
-	  // signalWidth = 0;
+	   int signalWidth = 0;
 	   // Scans the last row of the 2D array, incrementing the signalHeight if a '*' is found
 	   for (int i = 0; i < BarcodeImage.MAX_WIDTH; i++) {
-		   if (image.getPixel(0,i))
-			   actualWidth++;//signalWidth++;
+		   if (image.getPixel(BarcodeImage.MAX_HEIGHT-1, i)) signalWidth++;
 	   }
-	   return actualWidth;//  return signalWidth;
+	   return signalWidth;
    }
    
    /**
@@ -77,55 +78,87 @@ class DataMatrix implements BarcodeIO
     */
    private int computeSignalHeight()
    {
-	   
-	  // signalHeight = 0;
+	   int signalHeight = 0;
 	   // Scans each element in the first column the 2D array, incrementing the signalHeight if a '*' is found
 	   for (int i = 0; i < BarcodeImage.MAX_HEIGHT; i++) {
-		   if (image.getPixel(i,0))
-			   actualHeight++;// signalHeight++;
-	   
+		   if (image.getPixel(i, 0)) signalHeight++;
 	   }
-	   return actualHeight;// return signalHeight;
+	   return signalHeight;
    }
    
    
    /**
     * Makes the BarcodeImage lower-left justified 
     */
-   public void cleanImage() 
+   private void cleanImage() 
    {
-	   BarcodeImage cleanImage = new BarcodeImage();
-	   boolean barcodeFound = false;
-	   int offsetX= 0 ;
-	   int offsetY = 0;
+	   // Make the image left justified
+	   while (leftColumnEmpty()) shiftImageLeft(); 
 	   
-		
-	   // Scan the image - left to right, top to bottom
+	   // Make the image bottom justified
+	   while (bottomRowEmpty()) shiftImageDown();
+   }
+   
+   /**
+    * Helper method for cleanImage()
+    * Shifts the image to the left by one column
+    */
+   private void shiftImageLeft() 
+   {
+	   // Scan the image - top to bottom, left to right
 	   for (int i = 0; i < BarcodeImage.MAX_HEIGHT; i++) // Scan each column 
 	   {
-			for (int j = 0; j < BarcodeImage.MAX_WIDTH; j++) // Scan each row
-			{ 
-				
-				if (image.getPixel(i, j) )// If a '*' is found
-				{
-					if (!barcodeFound) // Barcode not found
-					{ 
-						// Get the position of the top-left corner
-						offsetX = j;
-						offsetY = i;
-						barcodeFound = true;
-					} 
-					else // Barcode found
-					{ 
-						//Copy the old barcode to the new one
-						cleanImage.setPixel(i-offsetY, j-offsetX,true);
-					}
-				}
+		  for (int j = 1; j < BarcodeImage.MAX_WIDTH; j++) // Scan each row
+		  { 
+			  // Scan each row
+			  image.setPixel(i, j-1, image.getPixel(i, j)); // Shift each column to the left
+			  
+		   }
+	   }
+   }
+   
+   /**
+    * Helper method for cleanImage()
+    * Shift the image down by one row
+    */
+   private void shiftImageDown() 
+   {
+	   // Scan the image - bottom to top, left to right
+	   for (int i = BarcodeImage.MAX_HEIGHT; i > 0; i--) // Scan each column
+	   {
+		   for (int j = 0; j < BarcodeImage.MAX_WIDTH; j++) // Scan each row
+			{
+			   image.setPixel(i, j, image.getPixel(i-1, j)); // Shift each row down
 			}
-		}
-		// Set the old image to the new one
-		image = cleanImage;
-	}
+	   }
+   }
+   
+   
+   /**
+    * Helper method for cleanImage()
+    * @return true if the leftmost column in the BarcodeImage is empty
+    */
+   private boolean leftColumnEmpty() {
+	  boolean isEmpty = true;
+	  for (int i = 0; i < BarcodeImage.MAX_HEIGHT; i++) 
+	  {
+		  if (image.getPixel(i, 0)) isEmpty = false;
+	  }
+	  return isEmpty;
+   }
+   
+   /**
+    * Helper method for cleanImage()
+    * @return true if the leftmost column in the BarcodeImage is empty
+    */
+   private boolean bottomRowEmpty() {
+	  boolean isEmpty = true;
+	  for (int j = 0; j < BarcodeImage.MAX_WIDTH; j++) 
+	  {
+		  if (image.getPixel(BarcodeImage.MAX_HEIGHT-1, j)) isEmpty = false;
+	  }
+	  return isEmpty;
+   }
    
    
    // ------- Implementation of BarcodeIO interface methods -------
@@ -138,7 +171,6 @@ class DataMatrix implements BarcodeIO
     * @param bc the BarcodeImage object 
     * @return true if no CloneNotSupportedException occurs
     */
-   @Override
    public boolean scan(BarcodeImage bc)
    {
 	   try
@@ -179,21 +211,111 @@ class DataMatrix implements BarcodeIO
       return true;
    }
    
+   /**
+    * Looks at the internal image stored in the implementing class,
+    * and produces a companion text string
+    */
    public boolean translateImageToText()
    {
+	   System.out.println("\nDecoded Image");
+	   int topRow=(BarcodeImage.MAX_HEIGHT-getActualHeight());
+	 
+	    char[][] c = new char[BarcodeImage.MAX_HEIGHT-1][ getActualWidth()];
+	   
+	    //Holds the decoded image representing binary numbers
+	    //located on the vertical position of the picture
+	   String imageToBinary = "";
+	    
+	      for (int row = 1; row < BarcodeImage.MAX_HEIGHT-1; row++)
+	      {
+	         for (int col = 1; col < getActualWidth(); col++)
+	         {
+	        	 //if reached the point after the empty
+	        	 //space (remember the array is shifted down)
+				if (row > topRow)
+					//begin to decode after the Closed Limitation Line and Open Borderline
+					if (image.getPixel(row, col)) {
+						c[row][col]='1';
+						imageToBinary+="1";
+						
+					} else {
+						c[row][col]='0';
+						imageToBinary+="0";	
+					}
+	         }
+	         imageToBinary+="\n";
+	      }
+	      
+	      printDecodedImage(imageToBinary.trim());
+	      binaryToDecimal(topRow, c);
+
       return true;
    }
    
+	public void printDecodedImage(String imageToBinary)
+	{
+		System.out.println();
+		System.out.println(imageToBinary);
+	}
+
+	/**
+	 * Loops through the decoded image and transposes
+	 * rows with columns. Each column will be converted to row that will
+	 * hold a binary number to be converted to a decimal number
+	 * and finally to asccii code
+	 * @param topRow the row number where the image is shifted 
+	 * @param c the array that holds the binary numbers
+	 */
+	public void binaryToDecimal(int topRow, char[][] c)
+	{
+		int decimalToAsccii = 0;//holds the sum of the binaries
+		System.out.println();
+		
+		for (int j = 1; j < getActualWidth(); j++)
+		{
+			for (int i = 1; i < getActualHeight() - 1; i++)
+			{
+				char[] c1 = new char[getActualWidth()];
+				c1[i] = (c[topRow + i][j]);
+				//if ones, multiply by the power of two
+				if (c1[i] == '1')
+				{
+					decimalToAsccii += Math.pow(2, Math.abs(i - 8));
+
+				}
+			}
+			char convertion = ((char) decimalToAsccii);
+			this.text += String.valueOf(convertion);
+			decimalToAsccii = 0;//reset for the next binary number
+			
+		}
+		System.out.println();
+
+	}
+
+	/**
+	 * Displays the decoded Text to Console
+	 */
    public void displayTextToConsole()
    {
-     
+	   
+		System.out.print(text+"\n");
+		System.out.println("\t-----------------");
    }
    
    public void displayImageToConsole()
    {
-      
+	  
+	   // THIS STILL NEEDS TO BE WRITTEN ACCORDING TO THE SPEC,
+	   // I wrote this for testing purposes only
+	  
+	  System.out.println("-----------------------");
+      image.displayToConsole();
+      System.out.println("-----------------------");
    }
-   //-------------------------------------------------------------
+
+   // ---- End of BarcodeIO interface methods ----
+   
    public static void main(String[] args)
    {
       String[] sImageIn =
@@ -239,13 +361,24 @@ class DataMatrix implements BarcodeIO
             "                                          "
 
       };
-     
-      BarcodeImage bc = new BarcodeImage(sImageIn);
       
-     
+      BarcodeImage bc = new BarcodeImage(sImageIn);
       DataMatrix dm = new DataMatrix(bc);
-      System.out.println("dm.actualHeight "+ dm.actualHeight);
-      System.out.println("actualWidth "+dm.actualWidth);
+      dm.translateImageToText();
+      dm.displayTextToConsole();
+      
+   
+     
+      bc = new BarcodeImage(sImageIn_2);
+      dm = new DataMatrix(bc);
+      dm.translateImageToText();
+      dm.displayTextToConsole();
+     
+      
+   
+      
+//      System.out.println("actualHeight "+ dm.actualHeight);
+//      System.out.println("actualWidth "+ dm.actualWidth);
 //     
 //      // First secret message
 //      dm.translateImageToText();
@@ -266,6 +399,6 @@ class DataMatrix implements BarcodeIO
 //      dm.displayImageToConsole();
    }   
    
-   // ---- End of BarcodeIO interface methods ----
+   
    
 }
