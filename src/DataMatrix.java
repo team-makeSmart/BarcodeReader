@@ -25,6 +25,7 @@ class DataMatrix implements BarcodeIO
     */
    DataMatrix(BarcodeImage image)
    {
+	   this();
 	   scan(image);
    }
    
@@ -34,6 +35,7 @@ class DataMatrix implements BarcodeIO
     */
    DataMatrix(String text)
    {
+	   this();
 	   readText(text);
    }
    
@@ -210,17 +212,96 @@ class DataMatrix implements BarcodeIO
       return true;
    }
    
+   /**
+    * Looks at the internal image stored in the implementing class,
+    * and produces a companion text string
+    */
    public boolean translateImageToText()
    {
+	   System.out.println("\nDecoded Image");
+	   int topRow=(BarcodeImage.MAX_HEIGHT-getActualHeight());
+	 
+	    char[][] c = new char[BarcodeImage.MAX_HEIGHT-1][ getActualWidth()];
+	   
+	    //Holds the decoded image representing binary numbers
+	    //located on the vertical position of the picture
+	   String imageToBinary = "";
+	    
+	      for (int row = 1; row < BarcodeImage.MAX_HEIGHT-1; row++)
+	      {
+	         for (int col = 1; col < getActualWidth(); col++)
+	         {
+	        	 //if reached the point after the empty
+	        	 //space (remember the array is shifted down)
+				if (row > topRow)
+					//begin to decode after the Closed Limitation Line and Open Borderline
+					if (image.getPixel(row, col)) {
+						c[row][col]='1';
+						imageToBinary+="1";
+						
+					} else {
+						c[row][col]='0';
+						imageToBinary+="0";	
+					}
+	         }
+	         imageToBinary+="\n";
+	      }
+	      
+	      printDecodedImage(imageToBinary.trim());
+	      binaryToDecimal(topRow, c);
+
       return true;
    }
    
+   public void printDecodedImage(String imageToBinary)
+	{
+		System.out.println();
+		System.out.println(imageToBinary);
+	}
+   
+  /* Loops through the decoded image and transposes
+	 * rows with columns. Each column will be converted to row that will
+	 * hold a binary number to be converted to a decimal number
+	 * and finally to asccii code
+	 * @param topRow the row number where the image is shifted 
+	 * @param c the array that holds the binary numbers
+	 */
+	public void binaryToDecimal(int topRow, char[][] c)
+	{
+		int decimalToAsccii = 0;//holds the sum of the binaries
+		System.out.println();
+		
+		for (int j = 1; j < getActualWidth(); j++)
+		{
+			for (int i = 1; i < getActualHeight() - 1; i++)
+			{
+				char[] c1 = new char[getActualWidth()];
+				c1[i] = (c[topRow + i][j]);
+				//if ones, multiply by the power of two
+				if (c1[i] == '1')
+				{
+					decimalToAsccii += Math.pow(2, Math.abs(i - 8));
+
+				}
+			}
+			char convertion = ((char) decimalToAsccii);
+			this.text += String.valueOf(convertion);
+			decimalToAsccii = 0;//reset for the next binary number
+			
+		}
+		System.out.println();
+
+	}
+
+  
    /**
     * Displays the text to the console
     */
    public void displayTextToConsole()
    {
+
 	   System.out.println(text);
+
    }
    
    /**
@@ -285,7 +366,6 @@ class DataMatrix implements BarcodeIO
       };      
             
          
-      
       String[] sImageIn_2 =
       {
             "                                          ",
@@ -314,6 +394,18 @@ class DataMatrix implements BarcodeIO
       
       System.out.println("actualHeight "+ dm.actualHeight);
       System.out.println("actualWidth "+ dm.actualWidth);
+      
+      
+      //translate two images to text
+      dm.translateImageToText();
+      dm.displayTextToConsole();
+      
+      bc = new BarcodeImage(sImageIn_2);
+      dm = new DataMatrix(bc);
+      dm.translateImageToText();
+      dm.displayTextToConsole();
+      
+     
 //     
 //      // First secret message
 //      dm.translateImageToText();
