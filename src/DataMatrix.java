@@ -293,13 +293,15 @@ class DataMatrix implements BarcodeIO
 
 	}
 
-   
+  
    /**
     * Displays the text to the console
     */
    public void displayTextToConsole()
    {
-	   System.out.println(text+"\n");
+
+	   System.out.println(text);
+
    }
    
    /**
