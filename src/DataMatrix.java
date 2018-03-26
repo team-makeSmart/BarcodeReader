@@ -66,8 +66,10 @@ class DataMatrix implements BarcodeIO
    {
 	   int signalWidth = 0;
 	   // Scans the last row of the 2D array, incrementing the signalHeight if a '*' is found
-	   for (int i = 0; i < BarcodeImage.MAX_WIDTH; i++) {
-		   if (image.getPixel(BarcodeImage.MAX_HEIGHT-1, i)) signalWidth++;
+	   for (int col = 0; col < BarcodeImage.MAX_WIDTH; col++) {
+		   if (image.getPixel(BarcodeImage.MAX_HEIGHT-1, col)) {
+			   signalWidth++;
+		   }
 	   }
 	   return signalWidth;
    }
@@ -80,8 +82,10 @@ class DataMatrix implements BarcodeIO
    {
 	   int signalHeight = 0;
 	   // Scans each element in the first column the 2D array, incrementing the signalHeight if a '*' is found
-	   for (int i = 0; i < BarcodeImage.MAX_HEIGHT; i++) {
-		   if (image.getPixel(i, 0)) signalHeight++;
+	   for (int row = 0; row < BarcodeImage.MAX_HEIGHT; row++) {
+		   if (image.getPixel(row, 0)) {
+			   signalHeight++;
+		   }
 	   }
 	   return signalHeight;
    }
@@ -93,10 +97,14 @@ class DataMatrix implements BarcodeIO
    private void cleanImage() 
    {
 	   // Make the image left justified
-	   while (leftColumnEmpty()) shiftImageLeft(); 
+	   while (leftColumnEmpty()) {
+		   shiftImageLeft(); 
+	   }
 	   
 	   // Make the image bottom justified
-	   while (bottomRowEmpty()) shiftImageDown();
+	   while (bottomRowEmpty()) {
+		   shiftImageDown();
+	   }
    }
    
    /**
@@ -106,13 +114,12 @@ class DataMatrix implements BarcodeIO
    private void shiftImageLeft() 
    {
 	   // Scan the image - top to bottom, left to right
-	   for (int i = 0; i < BarcodeImage.MAX_HEIGHT; i++) // Scan each column 
+	   for (int row = 0; row < BarcodeImage.MAX_HEIGHT; row++) // Scan each column 
 	   {
-		  for (int j = 1; j < BarcodeImage.MAX_WIDTH; j++) // Scan each row
+		  for (int col = 1; col < BarcodeImage.MAX_WIDTH; col++) // Scan each row
 		  { 
 			  // Scan each row
-			  image.setPixel(i, j-1, image.getPixel(i, j)); // Shift each column to the left
-			  
+			  image.setPixel(row, col-1, image.getPixel(row, col)); // Shift each column to the left
 		   }
 	   }
    }
@@ -124,11 +131,11 @@ class DataMatrix implements BarcodeIO
    private void shiftImageDown() 
    {
 	   // Scan the image - bottom to top, left to right
-	   for (int i = BarcodeImage.MAX_HEIGHT; i > 0; i--) // Scan each column
+	   for (int row = BarcodeImage.MAX_HEIGHT; row > 0; row--) // Scan each column
 	   {
-		   for (int j = 0; j < BarcodeImage.MAX_WIDTH; j++) // Scan each row
+		   for (int col = 0; col < BarcodeImage.MAX_WIDTH; col++) // Scan each row
 			{
-			   image.setPixel(i, j, image.getPixel(i-1, j)); // Shift each row down
+			   image.setPixel(row, col, image.getPixel(row-1, col)); // Shift each row down
 			}
 	   }
    }
@@ -140,9 +147,9 @@ class DataMatrix implements BarcodeIO
     */
    private boolean leftColumnEmpty() {
 	  boolean isEmpty = true;
-	  for (int i = 0; i < BarcodeImage.MAX_HEIGHT; i++) 
+	  for (int row = 0; row < BarcodeImage.MAX_HEIGHT; row++) // Scan the leftmost column 
 	  {
-		  if (image.getPixel(i, 0)) isEmpty = false;
+		  if (image.getPixel(row, 0)) isEmpty = false; // '*' found, column is not empty
 	  }
 	  return isEmpty;
    }
@@ -153,9 +160,9 @@ class DataMatrix implements BarcodeIO
     */
    private boolean bottomRowEmpty() {
 	  boolean isEmpty = true;
-	  for (int j = 0; j < BarcodeImage.MAX_WIDTH; j++) 
+	  for (int col = 0; col < BarcodeImage.MAX_WIDTH; col++) // Scan the bottom row
 	  {
-		  if (image.getPixel(BarcodeImage.MAX_HEIGHT-1, j)) isEmpty = false;
+		  if (image.getPixel(BarcodeImage.MAX_HEIGHT-1, col)) isEmpty = false; // '*' found, row is not empty
 	  }
 	  return isEmpty;
    }
@@ -207,10 +214,84 @@ class DataMatrix implements BarcodeIO
 	      return false;
    }
    
+   /**
+    * Generates a BarcodeImage based on a given text
+    */
    public boolean generateImageFromText()
    {
-      return true;
+	   if (!text.isEmpty()) 
+	   {
+		   this.image = new BarcodeImage();  // First, make sure the BarcodeImage is blank
+		   generateBarcodeBorders(); // Generate the borders for the image
+		   fillBarcodeFromText(); // Fill the inside of the barcode
+	       return true;
+	   } else 
+	   {
+		   return false;
+	   }
+	   
    }
+   
+   /**
+    * Generates the borders (2 closed limitation lines + 2 open borderlines) for the image
+    */
+   private void generateBarcodeBorders() 
+   {
+	   final int BORDER_HEIGHT = 7; // One for each 2^(0 to 7)
+	   final int BORDER_WIDTH = text.length()+2; // Plus 2 because of the extra left and right columns
+	   
+	   // Generate bottom closed limitation line
+	   for (int col = 0; col < BORDER_WIDTH; col++) 
+	   {
+		   image.setPixel(BarcodeImage.MAX_HEIGHT-1, col, true);
+	   }
+	   
+	   // Generate left closed limitation line
+	   for (int row = BarcodeImage.MAX_HEIGHT- BORDER_HEIGHT-2; row <= BarcodeImage.MAX_HEIGHT-2; row++) 
+	   {
+		   image.setPixel(row, 0, true);
+	   }
+	   
+	   // Generate top open borderline
+	   for (int col = 0; col < BORDER_WIDTH; col+=2) 
+	   {
+		   image.setPixel(BarcodeImage.MAX_HEIGHT-BORDER_HEIGHT-3, col, true);
+	   }
+	   
+	   // Geneate right open borderline
+	   for (int row = BarcodeImage.MAX_HEIGHT-1; row > BarcodeImage.MAX_HEIGHT-BORDER_HEIGHT-3; row-=2) 
+	   {
+		   image.setPixel(row, BORDER_WIDTH-1, true);
+	   }
+	   
+	   // Set actualHeight and actualWidth so that the image prints properly
+	   this.actualHeight = computeSignalHeight();
+	   this.actualWidth = computeSignalWidth();
+   }
+   
+   /**
+    * Fills in the barcode using the given text
+    */
+   private void fillBarcodeFromText() {
+	   final int IMAGE_BEGINING_MARK = BarcodeImage.MAX_HEIGHT - 2;
+	   int asciiValue;
+	   
+	   for (int charIndex = 0; charIndex < text.length(); charIndex++) // Scan the text string
+	   { 
+		   asciiValue = text.charAt(charIndex); // Get the ASCII value for each character
+		   
+		   for (int exponent = 7; exponent >= 0; exponent--) // Cycle through 2^7 to 2^0
+		   {
+			   if (asciiValue >= Math.pow(2, exponent)) 
+			   {
+				   image.setPixel(IMAGE_BEGINING_MARK-exponent, charIndex+1, true); // Set '*' in barcode
+				   asciiValue -= Math.pow(2, exponent);
+			   }
+		   }
+	   }
+   }
+   
+   
    
    /**
     * Looks at the internal image stored in the implementing class,
@@ -225,7 +306,7 @@ class DataMatrix implements BarcodeIO
 	   
 	    //Holds the decoded image representing binary numbers
 	    //located on the vertical position of the picture
-	   String imageToBinary = "";
+	    String imageToBinary = "";
 	    
 	      for (int row = 1; row < BarcodeImage.MAX_HEIGHT-1; row++)
 	      {
@@ -248,7 +329,7 @@ class DataMatrix implements BarcodeIO
 	      }
 	      
 	      printDecodedImage(imageToBinary.trim());
-	      binaryToDecimal(topRow, c);
+	      binaryToString(topRow, c);
 
       return true;
    }
@@ -259,14 +340,14 @@ class DataMatrix implements BarcodeIO
 		System.out.println(imageToBinary);
 	}
    
-  /* Loops through the decoded image and transposes
+   	/** Loops through the decoded image and transposes
 	 * rows with columns. Each column will be converted to row that will
 	 * hold a binary number to be converted to a decimal number
 	 * and finally to asccii code
 	 * @param topRow the row number where the image is shifted 
 	 * @param c the array that holds the binary numbers
 	 */
-	public void binaryToDecimal(int topRow, char[][] c)
+	public void binaryToString(int topRow, char[][] c)
 	{
 		int decimalToAsccii = 0;//holds the sum of the binaries
 		System.out.println();
@@ -281,7 +362,6 @@ class DataMatrix implements BarcodeIO
 				if (c1[i] == '1')
 				{
 					decimalToAsccii += Math.pow(2, Math.abs(i - 8));
-
 				}
 			}
 			char convertion = ((char) decimalToAsccii);
@@ -290,7 +370,6 @@ class DataMatrix implements BarcodeIO
 			
 		}
 		System.out.println();
-
 	}
 
   
@@ -299,9 +378,7 @@ class DataMatrix implements BarcodeIO
     */
    public void displayTextToConsole()
    {
-
 	   System.out.println(text);
-
    }
    
    /**
@@ -405,6 +482,8 @@ class DataMatrix implements BarcodeIO
       dm.translateImageToText();
       dm.displayTextToConsole();
       
+      dm.generateImageFromText();
+      dm.displayImageToConsole();
      
 //     
 //      // First secret message
