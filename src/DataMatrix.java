@@ -364,7 +364,6 @@ class DataMatrix implements BarcodeIO
       };      
             
          
-      
       String[] sImageIn_2 =
       {
             "                                          ",
