@@ -9,19 +9,13 @@ class BarcodeImage implements Cloneable
    private boolean[][] image_data = new boolean[MAX_HEIGHT][MAX_WIDTH];
 
    /**
-    * Default Constructor : Initiates a 2D array holding all white values, i.e.
-    * false values.
+    * Default Constructor : creates an object of class type BarcodeImage. Note:
+    * Object holds all default false values values because instance variable
+    * array image_data are are automatically initialized to false in the
+    * declaration of the array.
     */
    BarcodeImage()
    {
-      // Initialize 2D array to have all white values, i.e. false values
-      for (int row = 0; row < MAX_HEIGHT; row++)
-      {
-         for (int col = 0; col < MAX_WIDTH; col++)
-         {
-            image_data[row][col] = false;
-         }
-      }
    }
 
    /**
@@ -40,12 +34,12 @@ class BarcodeImage implements Cloneable
       int strIndex = str_data.length - 1;
 
       // On iterations of for-loop,width holds length of string arg at strIndex
-      // Width will allow the for loop to only access the values of the
+      // Width will allow the for-loop to only access the values of the
       // str_data[] within bounds of each elements length and thus
       // ragged arrays are accounted for
       int width = 0;
 
-      // Height is similar to
+      // Height ensures for-loops stay within bounds of str_data's array length
       int height = (MAX_HEIGHT - str_data.length);
 
       // Initialize image_date to have the values of the string argument
