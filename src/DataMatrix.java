@@ -348,8 +348,8 @@ class DataMatrix implements BarcodeIO
 	 */
 	public void binaryToString(int topRow, char[][] c)
 	{
-		int decimalToAsccii = 0;//holds the sum of the binaries
-		text = ""; // Make sure text 
+		int decimalToAsccii = 0; //holds the sum of the binaries
+		text = ""; // Make sure text is blank
 		
 		for (int j = 1; j < getActualWidth(); j++)
 		{
