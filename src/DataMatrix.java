@@ -1,8 +1,6 @@
 class DataMatrix implements BarcodeIO
 
 {
-   public static final char BLACK_CHAR = '*';
-   public static final char WHITE_CHAR = ' '; 
    private BarcodeImage image;
    private String text;
    private int actualWidth;
