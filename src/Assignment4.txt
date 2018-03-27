@@ -81,8 +81,8 @@ class DataMatrix implements BarcodeIO
    private int computeSignalWidth()
    {
       int signalWidth = 0;
-      // Scans the last row of the 2D array, incrementing the signalHeight if a '*' is
-      // found
+      // Scans the last row of the 2D array, incrementing the signalHeight if a
+      // '*' is found
       for (int col = 0; col < BarcodeImage.MAX_WIDTH; col++)
       {
          if (image.getPixel(BarcodeImage.MAX_HEIGHT - 1, col))
@@ -137,12 +137,12 @@ class DataMatrix implements BarcodeIO
    private void shiftImageLeft()
    {
       // Scan the image - top to bottom, left to right
-      for (int row = 0; row < BarcodeImage.MAX_HEIGHT; row++) // Scan each column
+      for (int row = 0; row < BarcodeImage.MAX_HEIGHT; row++)// Scan each col
       {
-         for (int col = 1; col < BarcodeImage.MAX_WIDTH; col++) // Scan each row
+         for (int col = 1; col < BarcodeImage.MAX_WIDTH; col++)// Scan each row
          {
-            // Scan each row
-            image.setPixel(row, col - 1, image.getPixel(row, col)); // Shift each column to the left
+            // Shift each column to the left
+            image.setPixel(row, col - 1, image.getPixel(row, col));
          }
       }
    }
@@ -153,11 +153,12 @@ class DataMatrix implements BarcodeIO
    private void shiftImageDown()
    {
       // Scan the image - bottom to top, left to right
-      for (int row = BarcodeImage.MAX_HEIGHT; row > 0; row--) // Scan each column
+      for (int row = BarcodeImage.MAX_HEIGHT; row > 0; row--)// Scan each col
       {
-         for (int col = 0; col < BarcodeImage.MAX_WIDTH; col++) // Scan each row
+         for (int col = 0; col < BarcodeImage.MAX_WIDTH; col++)// Scan each row
          {
-            image.setPixel(row, col, image.getPixel(row - 1, col)); // Shift each row down
+            // Shift each row down
+            image.setPixel(row, col, image.getPixel(row - 1, col));
          }
       }
    }
@@ -170,7 +171,9 @@ class DataMatrix implements BarcodeIO
    private boolean leftColumnEmpty()
    {
       boolean isEmpty = true;
-      for (int row = 0; row < BarcodeImage.MAX_HEIGHT; row++) // Scan the leftmost column
+
+      // Scan the leftmost column
+      for (int row = 0; row < BarcodeImage.MAX_HEIGHT; row++)
       {
          if (image.getPixel(row, 0))
             isEmpty = false; // '*' found, column is not empty
@@ -186,7 +189,9 @@ class DataMatrix implements BarcodeIO
    private boolean bottomRowEmpty()
    {
       boolean isEmpty = true;
-      for (int col = 0; col < BarcodeImage.MAX_WIDTH; col++) // Scan the bottom row
+
+      // Scan the bottom row
+      for (int col = 0; col < BarcodeImage.MAX_WIDTH; col++)
       {
          if (image.getPixel(BarcodeImage.MAX_HEIGHT - 1, col))
             isEmpty = false; // '*' found, row is not empty
@@ -218,7 +223,7 @@ class DataMatrix implements BarcodeIO
 
       } catch (CloneNotSupportedException e)
       {
-         // this shouldn't happen
+         // This section shouldn't happen
       }
       return false;
    }
@@ -232,26 +237,31 @@ class DataMatrix implements BarcodeIO
     */
    public boolean readText(String text)
    {
+      // Checks if in range
       if (text.length() < BarcodeImage.MAX_WIDTH)
       {
-         this.text = text;
-         return true;
+         this.text = text; // Assigns text argument to object
+         return true; // Method was successful
       }
-      return false;
+      return false; // Method was not successful
    }
 
    /**
     * Generates a BarcodeImage based on a given text
+    * 
+    * @return boolean true if successful, false if error prevented completion
     */
    public boolean generateImageFromText()
    {
       if (!text.isEmpty())
       {
-         this.image = new BarcodeImage(); // First, make sure the BarcodeImage is blank
+         // First, make sure the BarcodeImage is blank
+         this.image = new BarcodeImage();
          generateBarcodeBorders(); // Generate the borders for the image
          fillBarcodeFromText(); // Fill the inside of the barcode
          return true;
-      } else
+      } 
+      else
       {
          return false;
       }
@@ -264,8 +274,11 @@ class DataMatrix implements BarcodeIO
     */
    private void generateBarcodeBorders()
    {
-      final int BORDER_HEIGHT = 7; // One for each 2^(0 to 7)
-      final int BORDER_WIDTH = text.length() + 2; // Plus 2 because of the extra left and right columns
+      // One for each 2^(0 to 7)
+      final int BORDER_HEIGHT = 7;
+
+      // Plus 2 because of the extra left and right columns
+      final int BORDER_WIDTH = text.length() + 2;
 
       // Generate bottom closed limitation line
       for (int col = 0; col < BORDER_WIDTH; col++)
@@ -274,7 +287,8 @@ class DataMatrix implements BarcodeIO
       }
 
       // Generate left closed limitation line
-      for (int row = BarcodeImage.MAX_HEIGHT - BORDER_HEIGHT - 2; row <= BarcodeImage.MAX_HEIGHT - 2; row++)
+      for (int row = BarcodeImage.MAX_HEIGHT - BORDER_HEIGHT
+         - 2; row <= BarcodeImage.MAX_HEIGHT - 2; row++)
       {
          image.setPixel(row, 0, true);
       }
@@ -286,7 +300,8 @@ class DataMatrix implements BarcodeIO
       }
 
       // Geneate right open borderline
-      for (int row = BarcodeImage.MAX_HEIGHT - 1; row > BarcodeImage.MAX_HEIGHT - BORDER_HEIGHT - 3; row -= 2)
+      for (int row = BarcodeImage.MAX_HEIGHT - 1; row > BarcodeImage.MAX_HEIGHT
+         - BORDER_HEIGHT - 3; row -= 2)
       {
          image.setPixel(row, BORDER_WIDTH - 1, true);
       }
@@ -305,15 +320,20 @@ class DataMatrix implements BarcodeIO
       final int IMAGE_BEGINING_MARK = BarcodeImage.MAX_HEIGHT - 2;
       int asciiValue;
 
-      for (int charIndex = 0; charIndex < text.length(); charIndex++) // Scan the text string
+      // Scan the text string
+      for (int charIndex = 0; charIndex < text.length(); charIndex++)
       {
-         asciiValue = text.charAt(charIndex); // Get the ASCII value for each character
+         // Get the ASCII value for each character
+         asciiValue = text.charAt(charIndex);
 
-         for (int exponent = 7; exponent >= 0; exponent--) // Cycle through 2^7 to 2^0
+         // Cycle through 2^7 to 2^0
+         for (int exponent = 7; exponent >= 0; exponent--)
          {
             if (asciiValue >= Math.pow(2, exponent))
             {
-               image.setPixel(IMAGE_BEGINING_MARK - exponent, charIndex + 1, true); // Set '*' in barcode
+               // Set '*' in barcode
+               image.setPixel(IMAGE_BEGINING_MARK - exponent, charIndex + 1,
+                  true);
                asciiValue -= Math.pow(2, exponent);
             }
          }
@@ -323,6 +343,9 @@ class DataMatrix implements BarcodeIO
    /**
     * Looks at the internal image stored in the implementing class, and produces
     * a companion text string.
+    * 
+    * @return boolean true if method successful, false if unsuccessful because
+    *         image is blank
     */
    public boolean translateImageToText()
    {
@@ -335,8 +358,8 @@ class DataMatrix implements BarcodeIO
          int topRow = (BarcodeImage.MAX_HEIGHT - getActualHeight());
 
          // Holds a 2D array of char values representing image
-         char[][] charImgArray = 
-            new char[BarcodeImage.MAX_HEIGHT - 1][getActualWidth()];
+         char[][] charImgArray = new char[BarcodeImage.MAX_HEIGHT
+            - 1][getActualWidth()];
 
          for (int row = 1; row < BarcodeImage.MAX_HEIGHT - 1; row++)
          {
@@ -350,7 +373,7 @@ class DataMatrix implements BarcodeIO
                   // Open Borderline
                   if (image.getPixel(row, col))
                   {
-                     charImgArray[row][col] = '1'; 
+                     charImgArray[row][col] = '1';
                   } 
                   else
                   {
@@ -363,12 +386,12 @@ class DataMatrix implements BarcodeIO
          return true;
       }
    }
-   
+
    /**
-    * Helper method for translateImageToText(). Loops through the decoded image and
-    * transposes rows with columns. Each column will be converted to row that will
-    * hold a binary number to be converted to a decimal number and finally to
-    * asccii code
+    * Helper method for translateImageToText(). Loops through the decoded image
+    * and transposes rows with columns. Each column will be converted to row
+    * that will hold a binary number to be converted to a decimal number and
+    * finally to asccii code
     * 
     * @param topRow
     *           the row number where the image is shifted
@@ -446,21 +469,21 @@ class DataMatrix implements BarcodeIO
 
       // Go to new line
       System.out.println();
-      ;
 
-      for (int row = BarcodeImage.MAX_HEIGHT - actualHeight; row < BarcodeImage.MAX_HEIGHT; row++) // Scan through each
-                                                                                                   // row
+      // Scan through each row
+      for (int row = BarcodeImage.MAX_HEIGHT
+         - actualHeight; row < BarcodeImage.MAX_HEIGHT; row++)
       {
          // Print border
          System.out.print("|");
-         for (int col = 0; col < actualWidth; col++) // Scan through each column
+         for (int col = 0; col < actualWidth; col++) // Scan through each col
          {
-
             // Print a '*' if index value is true
             if (image.getPixel(row, col) == true)
             {
                System.out.print("*");
-            } else
+            } 
+            else
             {
                System.out.print(" ");
             }
@@ -485,19 +508,19 @@ class BarcodeImage implements Cloneable
 
    /**
     * Default Constructor : creates an object of class type BarcodeImage. Note:
-    * Object holds all default false values values because instance variable array
-    * image_data are are automatically initialized to false in the declaration of
-    * the array.
+    * Object holds all default false values values because instance variable
+    * array image_data are are automatically initialized to false in the
+    * declaration of the array.
     */
    BarcodeImage()
    {
    }
 
    /**
-    * Constructor : Initializes a 2D array that holds values based on string array
-    * of 1D elements received as the argument. All characters in strings shall be
-    * considered as true if char == '*', else will be left with default initialized
-    * to false.
+    * Constructor : Initializes a 2D array that holds values based on string
+    * array of 1D elements received as the argument. All characters in strings
+    * shall be considered as true if char == '*', else will be left with default
+    * initialized to false.
     * 
     * @param str_data[]
     *           array of strings that represents ' ' or '*'
@@ -547,7 +570,8 @@ class BarcodeImage implements Cloneable
     * @param col
     *           int value representing x-cartesian coordinate for image
     * @return boolean pixel value given at the coordinate location of the
-    *         parameters. If true, return white. If black or error, return false.
+    *         parameters. If true, return white. If black or error, return
+    *         false.
     */
    public boolean getPixel(int row, int col)
    {
@@ -569,12 +593,12 @@ class BarcodeImage implements Cloneable
    /**
     * Mutator Method
     * 
-    * @param row 
+    * @param row
     *           int value representing y-cartesian coordinate for image
-    * @param col 
+    * @param col
     *           int value representing x-cartesian coordinate for image
-    * @param value 
-    *             boolean representing true for '*' or false for ' '
+    * @param value
+    *           boolean representing true for '*' or false for ' '
     * @return boolean true if successful, else returns false
     */
    boolean setPixel(int row, int col, boolean value)
@@ -608,7 +632,7 @@ class BarcodeImage implements Cloneable
    {
       return (BarcodeImage) super.clone();
    }
-   
+
 }
 
 public class Assignment4
@@ -617,26 +641,40 @@ public class Assignment4
    public static void main(String[] args)
    {
       String[] sImageIn =
-      { "                                               ", "                                               ",
-            "                                               ", "     * * * * * * * * * * * * * * * * * * * * * ",
-            "     *                                       * ", "     ****** **** ****** ******* ** *** *****   ",
-            "     *     *    ****************************** ", "     * **    * *        **  *    * * *   *     ",
-            "     *   *    *  *****    *   * *   *  **  *** ", "     *  **     * *** **   **  *    **  ***  *  ",
-            "     ***  * **   **  *   ****    *  *  ** * ** ", "     *****  ***  *  * *   ** ** **  *   * *    ",
-            "     ***************************************** ", "                                               ",
-            "                                               ", "                                               "
-
-      };
+      { "                                               ",
+         "                                               ",
+         "                                               ",
+         "     * * * * * * * * * * * * * * * * * * * * * ",
+         "     *                                       * ",
+         "     ****** **** ****** ******* ** *** *****   ",
+         "     *     *    ****************************** ",
+         "     * **    * *        **  *    * * *   *     ",
+         "     *   *    *  *****    *   * *   *  **  *** ",
+         "     *  **     * *** **   **  *    **  ***  *  ",
+         "     ***  * **   **  *   ****    *  *  ** * ** ",
+         "     *****  ***  *  * *   ** ** **  *   * *    ",
+         "     ***************************************** ",
+         "                                               ",
+         "                                               ",
+         "                                               " };
 
       String[] sImageIn_2 =
-      { "                                          ", "                                          ",
-            "* * * * * * * * * * * * * * * * * * *     ", "*                                    *    ",
-            "**** *** **   ***** ****   *********      ", "* ************ ************ **********    ",
-            "** *      *    *  * * *         * *       ", "***   *  *           * **    *      **    ",
-            "* ** * *  *   * * * **  *   ***   ***     ", "* *           **    *****  *   **   **    ",
-            "****  *  * *  * **  ** *   ** *  * *      ", "**************************************    ",
-            "                                          ", "                                          ",
-            "                                          ", "                                          "
+      { "                                          ",
+         "                                          ",
+         "* * * * * * * * * * * * * * * * * * *     ",
+         "*                                    *    ",
+         "**** *** **   ***** ****   *********      ",
+         "* ************ ************ **********    ",
+         "** *      *    *  * * *         * *       ",
+         "***   *  *           * **    *      **    ",
+         "* ** * *  *   * * * **  *   ***   ***     ",
+         "* *           **    *****  *   **   **    ",
+         "****  *  * *  * **  ** *   ** *  * *      ",
+         "**************************************    ",
+         "                                          ",
+         "                                          ",
+         "                                          ",
+         "                                          "
 
       };
 
@@ -663,7 +701,7 @@ public class Assignment4
       dm.displayTextToConsole();
       dm.displayImageToConsole();
       System.out.println();
-      
+
       dm.readText("Team MakeSmart!");
       dm.generateImageFromText();
       dm.displayTextToConsole();
@@ -674,10 +712,10 @@ public class Assignment4
 
 /* 
 -----Begin Sample Output-----
-
-
-CSUMB CSIT online program is top notch.
------------------------------------------
+ 
+  
+ CSUMB CSIT online program is top notch.
+ -----------------------------------------
 |* * * * * * * * * * * * * * * * * * * * *|
 |*                                       *|
 |****** **** ****** ******* ** *** *****  |
@@ -690,7 +728,7 @@ CSUMB CSIT online program is top notch.
 |*****************************************|
 
 You did it!  Great work.  Celebrate.
---------------------------------------
+ --------------------------------------
 |* * * * * * * * * * * * * * * * * * * |
 |*                                    *|
 |**** *** **   ***** ****   *********  |
@@ -703,7 +741,7 @@ You did it!  Great work.  Celebrate.
 |**************************************|
 
 Bugs, begone!
----------------
+ ---------------
 |* * * * * * * *|
 |*             *|
 |*****  ******  |
@@ -716,7 +754,7 @@ Bugs, begone!
 |***************|
 
 Team MakeSmart!
------------------
+ -----------------
 |* * * * * * * * *|
 |*               *|
 |***** *********  |
@@ -727,7 +765,6 @@ Team MakeSmart!
 |*       * *  *  *|
 |* *** *******  * |
 |*****************|
-
 
 -----End Sample Output-----
 */
