@@ -321,50 +321,49 @@ class DataMatrix implements BarcodeIO
    }
 
    /**
-    * Looks at the internal image stored in the implementing class, and produces a
-    * companion text string
+    * Looks at the internal image stored in the implementing class, and produces
+    * a companion text string.
     */
    public boolean translateImageToText()
    {
-      if (!imageIsBlank()) // image is not blank
+      if (imageIsBlank()) // Image is blank
+      {
+         return false;
+      } 
+      else // image is not blank
       {
          int topRow = (BarcodeImage.MAX_HEIGHT - getActualHeight());
 
-         char[][] c = new char[BarcodeImage.MAX_HEIGHT - 1][getActualWidth()];
-
-         // Holds the decoded image representing binary numbers
-         // located on the vertical position of the picture
-         String imageToBinary = "";
+         // Holds a 2D array of char values representing image
+         char[][] charImgArray = 
+            new char[BarcodeImage.MAX_HEIGHT - 1][getActualWidth()];
 
          for (int row = 1; row < BarcodeImage.MAX_HEIGHT - 1; row++)
          {
             for (int col = 1; col < getActualWidth(); col++)
             {
-               // if reached the point after the empty
-               // space (remember the array is shifted down)
+               // If statement if reached the point after the empty space
+               // (Note: remember the array is shifted down)
                if (row > topRow)
-                  // begin to decode after the Closed Limitation Line and Open Borderline
+               {
+                  // Begin to decode after the Closed Limitation Line and
+                  // Open Borderline
                   if (image.getPixel(row, col))
                   {
-                     c[row][col] = '1';
-                     imageToBinary += "1";
-
-                  } else
+                     charImgArray[row][col] = '1'; 
+                  } 
+                  else
                   {
-                     c[row][col] = '0';
-                     imageToBinary += "0";
+                     charImgArray[row][col] = '0';
                   }
+               }
             }
-            imageToBinary += "\n";
          }
-         binaryToString(topRow, c);
+         binaryToString(topRow, charImgArray);
          return true;
-      } else
-      { // image is blank
-         return false;
       }
    }
-
+   
    /**
     * Helper method for translateImageToText(). Loops through the decoded image and
     * transposes rows with columns. Each column will be converted to row that will
