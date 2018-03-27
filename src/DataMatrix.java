@@ -1,8 +1,6 @@
 class DataMatrix implements BarcodeIO
 
 {
-   public static final char BLACK_CHAR = '*';
-   public static final char WHITE_CHAR = ' '; 
    private BarcodeImage image;
    private String text;
    private int actualWidth;
@@ -233,6 +231,7 @@ class DataMatrix implements BarcodeIO
    }
    
    /**
+    * Helper method for generateImageFromText()
     * Generates the borders (2 closed limitation lines + 2 open borderlines) for the image
     */
    private void generateBarcodeBorders() 
@@ -270,6 +269,7 @@ class DataMatrix implements BarcodeIO
    }
    
    /**
+    * Helper method for generateImageFromText()
     * Fills in the barcode using the given text
     */
    private void fillBarcodeFromText() {
@@ -299,48 +299,45 @@ class DataMatrix implements BarcodeIO
     */
    public boolean translateImageToText()
    {
-	   System.out.println("\nDecoded Image");
-	   int topRow=(BarcodeImage.MAX_HEIGHT-getActualHeight());
-	 
-	    char[][] c = new char[BarcodeImage.MAX_HEIGHT-1][ getActualWidth()];
-	   
-	    //Holds the decoded image representing binary numbers
-	    //located on the vertical position of the picture
-	    String imageToBinary = "";
-	    
-	      for (int row = 1; row < BarcodeImage.MAX_HEIGHT-1; row++)
-	      {
-	         for (int col = 1; col < getActualWidth(); col++)
-	         {
-	        	 //if reached the point after the empty
-	        	 //space (remember the array is shifted down)
-				if (row > topRow)
-					//begin to decode after the Closed Limitation Line and Open Borderline
-					if (image.getPixel(row, col)) {
-						c[row][col]='1';
-						imageToBinary+="1";
-						
-					} else {
-						c[row][col]='0';
-						imageToBinary+="0";	
-					}
-	         }
-	         imageToBinary+="\n";
-	      }
-	      
-	      printDecodedImage(imageToBinary.trim());
-	      binaryToString(topRow, c);
-
-      return true;
+	   if (!imageIsBlank()) // image is not blank
+	   {
+		   int topRow=(BarcodeImage.MAX_HEIGHT-getActualHeight());
+			 
+		    char[][] c = new char[BarcodeImage.MAX_HEIGHT-1][ getActualWidth()];
+		   
+		    //Holds the decoded image representing binary numbers
+		    //located on the vertical position of the picture
+		    String imageToBinary = "";
+		    
+		      for (int row = 1; row < BarcodeImage.MAX_HEIGHT-1; row++)
+		      {
+		         for (int col = 1; col < getActualWidth(); col++)
+		         {
+		        	 //if reached the point after the empty
+		        	 //space (remember the array is shifted down)
+					if (row > topRow)
+						//begin to decode after the Closed Limitation Line and Open Borderline
+						if (image.getPixel(row, col)) {
+							c[row][col]='1';
+							imageToBinary+="1";
+							
+						} else {
+							c[row][col]='0';
+							imageToBinary+="0";	
+						}
+		         }
+		         imageToBinary+="\n";
+		      }
+		      binaryToString(topRow, c);
+		      return true;
+	   } else { // image is blank
+		   return false;
+	   }
    }
    
-   public void printDecodedImage(String imageToBinary)
-	{
-		System.out.println();
-		System.out.println(imageToBinary);
-	}
-   
-   	/** Loops through the decoded image and transposes
+   	/**
+   	 * Helper method for translateImageToText().
+   	 * Loops through the decoded image and transposes
 	 * rows with columns. Each column will be converted to row that will
 	 * hold a binary number to be converted to a decimal number
 	 * and finally to asccii code
@@ -349,8 +346,8 @@ class DataMatrix implements BarcodeIO
 	 */
 	public void binaryToString(int topRow, char[][] c)
 	{
-		int decimalToAsccii = 0;//holds the sum of the binaries
-		System.out.println();
+		int decimalToAsccii = 0; //holds the sum of the binaries
+		text = ""; // Make sure text is blank
 		
 		for (int j = 1; j < getActualWidth(); j++)
 		{
@@ -364,13 +361,45 @@ class DataMatrix implements BarcodeIO
 					decimalToAsccii += Math.pow(2, Math.abs(i - 8));
 				}
 			}
-			char convertion = ((char) decimalToAsccii);
-			this.text += String.valueOf(convertion);
+			if(decimalToAsccii != 170)
+			{
+				char convertion = ((char) decimalToAsccii);
+				this.text += String.valueOf(convertion);
+			}
 			decimalToAsccii = 0;//reset for the next binary number
-			
 		}
-		System.out.println();
 	}
+	
+	/**
+	 * Helper method for tanslateImageToText()
+	 * @return true if the BarcodeImage is completely blank
+	 */
+	private boolean imageIsBlank() 
+	{
+		boolean isBlank = true;
+		for (int row = 0; row < BarcodeImage.MAX_HEIGHT; row++)
+		{
+			for (int col = 0; col < BarcodeImage.MAX_WIDTH; col++)
+			{
+				if (image.getPixel(row,col) == true)
+				{
+					isBlank = false;
+				}
+			}
+		}
+		return isBlank;
+	}
+	
+	 /**
+	    * Helper method for translateImageToText()
+	    * Used for testing only
+	    * @param imageToBinary the binary string that will be printed
+	    */
+	   public void printDecodedImage(String imageToBinary)
+		{
+		    System.out.println("\nDecoded Image\n");
+			System.out.println(imageToBinary);
+		}
 
   
    /**
