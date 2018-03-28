@@ -1,10 +1,12 @@
 /**
  * @author Hunter Mason, Jake McGhee, Mac Doussias, Pavlos Papadonikolakis
  * CLASS CST 338
+ * Team MakeSmart
  * Assignment 4, Module 4
  * Barcodes
  */
 
+// ------- BarcodeIO interface -------------------------------------------
 interface BarcodeIO
 {
    public boolean scan(BarcodeImage bc);
@@ -20,6 +22,7 @@ interface BarcodeIO
    public void displayImageToConsole();
 }
 
+//------- DataMatrix class -------------------------------------------
 class DataMatrix implements BarcodeIO
 {
    private BarcodeImage image;
@@ -227,8 +230,8 @@ class DataMatrix implements BarcodeIO
          this.actualHeight = computeSignalHeight();
          this.actualWidth = computeSignalWidth();
          return true;
-
-      } catch (CloneNotSupportedException e)
+      } 
+      catch (CloneNotSupportedException e)
       {
          // This section shouldn't happen
       }
@@ -306,7 +309,7 @@ class DataMatrix implements BarcodeIO
          image.setPixel(BarcodeImage.MAX_HEIGHT - BORDER_HEIGHT - 3, col, true);
       }
 
-      // Geneate right open borderline
+      // Generate right open borderline
       for (int row = BarcodeImage.MAX_HEIGHT - 1; row > BarcodeImage.MAX_HEIGHT
          - BORDER_HEIGHT - 3; row -= 2)
       {
@@ -503,6 +506,7 @@ class DataMatrix implements BarcodeIO
    // ---- End of BarcodeIO interface methods ----
 }
 
+//------- BarcodeImage class -------------------------------------------
 class BarcodeImage implements Cloneable
 {
    // Internal max dimensions of a two-dimensional array
@@ -538,7 +542,7 @@ class BarcodeImage implements Cloneable
       // Check if the string array argument has valid data
       if (checkSize(str_data) == false)
       {
-         return;  //the data is bad 
+         return;  // The data is bad 
       }
       
       // Index for string argument
@@ -577,7 +581,11 @@ class BarcodeImage implements Cloneable
 
    /**
     * Private helper method to check that the 1D string array holds acceptable
-    * data for conversion to 2D array for object of calling class
+    * data for conversion to 2D array for object of calling class.
+    * 
+    * @param data
+    *            one dimensional string array
+    * @return boolean true if data is valid, else false           
     */
    private boolean checkSize(String[] data)
    {
@@ -637,7 +645,8 @@ class BarcodeImage implements Cloneable
       {
          return false; // Error out of range
       }
-
+      
+      // Return the pixel at the coordinate value 
       return image_data[row][col];
    }
 
@@ -674,8 +683,7 @@ class BarcodeImage implements Cloneable
    }
 
    /**
-    * 
-    * Creates and returns a copy of a BarcodeImage object
+    * Method creates and returns a clone of a BarcodeImage object
     * 
     * @throws CloneNotSupportedException
     */
@@ -686,13 +694,16 @@ class BarcodeImage implements Cloneable
 
 }
 
+//------- Assignment4 class -------------------------------------------
 public class Assignment4
 {
 
    public static void main(String[] args)
    {
+      // Create image arrays of strings that represent an image
       String[] sImageIn =
-      { "                                               ",
+      { 
+         "                                               ",
          "                                               ",
          "                                               ",
          "     * * * * * * * * * * * * * * * * * * * * * ",
@@ -707,10 +718,13 @@ public class Assignment4
          "     ***************************************** ",
          "                                               ",
          "                                               ",
-         "                                               " };
+         "                                               " 
+      };
 
+      // Create image arrays of strings that represent an image
       String[] sImageIn_2 =
-      { "                                          ",
+      { 
+         "                                          ",
          "                                          ",
          "* * * * * * * * * * * * * * * * * * *     ",
          "*                                    *    ",
@@ -726,9 +740,9 @@ public class Assignment4
          "                                          ",
          "                                          ",
          "                                          "
-
       };
 
+      // Declare objects for program
       BarcodeImage bc = new BarcodeImage(sImageIn);
       DataMatrix dm = new DataMatrix(bc);
 
@@ -762,7 +776,7 @@ public class Assignment4
 }
 
 /* 
------Begin Sample Output-----
+-----Begin Sample Output--------------------------------------
  
   
  CSUMB CSIT online program is top notch.
@@ -817,5 +831,5 @@ Team MakeSmart!
 |* *** *******  * |
 |*****************|
 
------End Sample Output-----
+-----End Sample Output---------------------------------------
 */
