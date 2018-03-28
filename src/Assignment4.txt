@@ -520,8 +520,16 @@ class BarcodeImage implements Cloneable
     * declaration of the array.
     */
    public BarcodeImage()
-   {
-   }
+    {
+        image_data = new boolean[MAX_HEIGHT][MAX_WIDTH];
+        for (int i = 0; i < MAX_WIDTH; i++)
+        {
+            for (int j = 0; j < MAX_HEIGHT; j++)
+            {
+                setPixel(i, j, false);
+            }
+        }
+    }
 
    /**
     * Constructor : Initializes a 2D array that holds values based on string
