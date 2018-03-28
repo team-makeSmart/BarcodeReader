@@ -23,7 +23,7 @@ class DataMatrix implements BarcodeIO
    /**
     * Default constructor
     */
-   DataMatrix()
+   public DataMatrix()
    {
       this.image = new BarcodeImage();
       this.text = "";
@@ -36,7 +36,7 @@ class DataMatrix implements BarcodeIO
     * 
     * @param image
     */
-   DataMatrix(BarcodeImage image)
+   public DataMatrix(BarcodeImage image)
    {
       this();
       scan(image);
@@ -47,7 +47,7 @@ class DataMatrix implements BarcodeIO
     * 
     * @param text
     */
-   DataMatrix(String text)
+   public DataMatrix(String text)
    {
       this();
       readText(text);
@@ -512,7 +512,7 @@ class BarcodeImage implements Cloneable
     * array image_data are are automatically initialized to false in the
     * declaration of the array.
     */
-   BarcodeImage()
+   public BarcodeImage()
    {
    }
 
@@ -526,7 +526,7 @@ class BarcodeImage implements Cloneable
     *           array of strings that represents ' ' or '*'
     * @Override
     */
-   BarcodeImage(String[] str_data)
+   public BarcodeImage(String[] str_data)
    {
       // Index for string argument
       int strIndex = str_data.length - 1;
