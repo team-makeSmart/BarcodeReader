@@ -1,3 +1,10 @@
+/**
+ * @author Hunter Mason, Jake McGhee, Mac Doussias, Pavlos Papadonikolakis
+ * CLASS CST 338
+ * Assignment 4, Module 4
+ * Barcodes
+ */
+
 interface BarcodeIO
 {
    public boolean scan(BarcodeImage bc);
@@ -528,6 +535,12 @@ class BarcodeImage implements Cloneable
     */
    public BarcodeImage(String[] str_data)
    {
+      // Check if the string array argument has valid data
+      if (checkSize(str_data) == false)
+      {
+         return;  //the data is bad 
+      }
+      
       // Index for string argument
       int strIndex = str_data.length - 1;
 
@@ -562,6 +575,44 @@ class BarcodeImage implements Cloneable
       }
    }
 
+   /**
+    * Private helper method to check that the 1D string array holds acceptable
+    * data for conversion to 2D array for object of calling class
+    */
+   private boolean checkSize(String[] data)
+   {
+      // Check if the data argument array is null
+      if (data == null)
+      {
+         return false; // The array is null
+      }
+
+      // Check if the data argument array has too many elements for the class
+      if (data.length > MAX_HEIGHT)
+      {
+         return false; // Array has too many elements for the class
+      }
+
+      // Iterate through all elements of the argument array
+      for (String dataElement : data)
+      {
+         // Check if the element is null. Null elements cannot be processed
+         // by the class
+         if (dataElement == null)
+         {
+            return false; // Array has null element values
+         }
+
+         // Check if the element is too long for the max width of the class
+         // And check if the data element does not have any characters
+         if (dataElement.length() > MAX_WIDTH || dataElement.length() < 1)
+         {
+            return false; // The element is too long or not populated
+         }
+      }
+      return true; // Data passed all checks and is valid
+   }
+   
    /**
     * Accessor Method
     * 
